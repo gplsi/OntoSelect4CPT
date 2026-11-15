@@ -19,7 +19,7 @@ Inputs are Excel workbooks with one row per ontology or fragment in `DetalleOnto
 | 1 | [identify_redundant_metrics.py](identify_redundant_metrics.py) | Analyze the full corpus workbook. Exclude constant or empty metrics and iteratively remove redundancy where absolute Pearson correlation exceeds the threshold. Produce `columnas_eliminadas.txt` and `metricas_seleccionadas.xlsx`. F1 is not used. |
 | 2 | [remove_redundant_metrics.py](remove_redundant_metrics.py) | Apply the removal list from step 1 to every random-dataset workbook, creating copies with a common set of remaining metrics. |
 | 3 | [compute_metric_f1_associations.py](compute_metric_f1_associations.py) | Compute token-weighted metric means for each cleaned random dataset and correlate them with F1 using Pearson and Spearman at both epochs. Retain metrics whose four coefficients are finite, nonzero, and share a sign. Their mean absolute coefficient becomes `Association_score`. P-values are reported, without filtering. |
-| 4 | [score_corpus_files.py](score_corpus_files.py) | Combine the full corpus metrics retained in step 1 with the associations from step 3. Min-max normalize suitable metrics, invert negatively associated ones, and compute their weighted mean as `global_correlation_score`. Higher scores indicate files favored by the learned criterion. |
+| 4 | [score_corpus_files.py](score_corpus_files.py) | Combine the full corpus metrics retained in step 1 with the associations from step 3. Min-max normalize suitable metrics, invert negatively associated ones, and compute their weighted mean as `association_correlation_score`. Higher scores indicate files favored by the learned criterion. |
 
 ## Example execution
 
