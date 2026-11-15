@@ -13,20 +13,20 @@ For each suitable metric j:
     contribution = association_score * x_oriented
 
 The final index is a weighted mean:
-    global_correlation_score = sum(contribution) / sum(association_score)
+    association_correlation_score = sum(contribution) / sum(association_score)
 
 Constant metrics receive a neutral normalized value of 0.5. All metric values
 must be numeric and finite; association weights must be finite and positive.
 Only columns listed in Todas and absent from Aptas are removed. Other dataset
 columns are retained. Append normalized, oriented, and weighted values for
-each suitable metric, followed by global_correlation_score.
+each suitable metric, followed by association_correlation_score.
 
 Requirements:
     Python 3.9 or later and openpyxl.
     python3 -m pip install openpyxl
 
 Execution:
-    python3 compute_global_correlation_score.py \
+    python3 score_corpus_files.py \
         --dataset DATASET_XLSX \
         --correlations CORRELATIONS_XLSX \
         --output OUTPUT_XLSX
@@ -255,7 +255,7 @@ def main() -> int:
             )
 
         total_weight = sum(config.weight for config in apt_metrics)
-        global_scores = [
+        association_scores = [
             sum(
                 config.weight * oriented_by_metric[config.name][index]
                 for config in apt_metrics
@@ -263,7 +263,7 @@ def main() -> int:
             / total_weight
             for index in range(worksheet.max_row - 1)
         ]
-        derived_columns.append(("global_correlation_score", global_scores))
+        derived_columns.append(("association_correlation_score", association_scores))
 
         first_new_column = worksheet.max_column + 1
         for offset, (header, values) in enumerate(derived_columns):
@@ -286,9 +286,9 @@ def main() -> int:
         print(f"Metrics analyzed in 'Todas': {len(all_metrics)}")
         print(f"Suitable metrics used: {len(apt_metrics)}")
         print(f"Unsuitable metrics removed from the dataset: {len(non_apt_columns)}")
-        print(f"Rows scored: {len(global_scores)}")
+        print(f"Rows scored: {len(association_scores)}")
         print(f"Sum of weights: {total_weight:.10f}")
-        print(f"Index range: [{min(global_scores):.6f}, {max(global_scores):.6f}]")
+        print(f"Index range: [{min(association_scores):.6f}, {max(association_scores):.6f}]")
         print(f"Output workbook: {output_path}")
         return 0
 
