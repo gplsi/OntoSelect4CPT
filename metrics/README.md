@@ -47,6 +47,19 @@ The definitions below document the current implementation, including historical 
 
 With the default configuration, `owl:Thing` and `owl:Nothing` are excluded, anonymous superclasses are omitted, and OWL restrictions do not contribute to non-taxonomic relationship counts. The formulas below describe those defaults.
 
+## Metric groups
+
+The metrics are organized into eight groups:
+
+1. [File volume and representation size](#1-file-volume-and-representation-size)
+2. [Schema inventory and axiom counts](#2-schema-inventory-and-axiom-counts)
+3. [Taxonomy shape, inheritance, and paths](#3-taxonomy-shape-inheritance-and-paths)
+4. [Non-taxonomic connectivity](#4-non-taxonomic-connectivity)
+5. [Property coverage and schema elaboration](#5-property-coverage-and-schema-elaboration)
+6. [Individuals and class population](#6-individuals-and-class-population)
+7. [Textual vocabulary, repetition, and literal coverage](#7-textual-vocabulary-repetition-and-literal-coverage)
+8. [Semantic richness, quality, and task alignment](#8-semantic-richness-quality-and-task-alignment)
+
 ## 1. File volume and representation size
 
 ### File size — `TamañoMB`
@@ -527,9 +540,11 @@ $$LCR=\frac{|\{c\in\mathcal C:\exists p,o,\ (c,p,o)\in G,\ o\text{ literal},\ |\
 
 Fraction of identified classes with at least one directly associated non-empty literal. Predicates need not be known labels, comments, or declared annotation properties.
 
-## 8. Structural and annotation richness components
+## 8. Semantic richness, quality, and task alignment
 
-These components come from `semantic_richness_for_all_classes`. They count neighborhood structure, property associations, and annotation-predicate presence. They do not use embeddings or judge semantic correctness. The historical `Annotations` and `Synonyms` suffixes require the distinctions below.
+This group brings together structural richness components, the composite `QS` index, and task semantic similarity.
+
+The richness components come from `semantic_richness_for_all_classes`. They count neighborhood structure, property associations, and annotation-predicate presence. They do not use embeddings or judge semantic correctness. The historical `Annotations` and `Synonyms` suffixes require the distinctions below.
 
 ### Mean taxonomy neighborhood — `AvgRi_Relations`
 
@@ -565,7 +580,6 @@ $$SR=\overline R+\overline A+\overline S.$$
 
 Unweighted sum of the three components without additional normalization. There is no fixed upper bound or independent guarantee of semantic quality. Although the function receives `class_index`, the current calculation does not use that textual index.
 
-## 9. Composite quality and task similarity
 
 ### Relative quality score — `QS`
 
