@@ -41,7 +41,7 @@ The definitions below document the current implementation, including historical 
 - $\mathcal C$ is the set of identified URI classes, with $C=|\mathcal C|$. Classes include URI subjects explicitly typed as `owl:Class`, `rdfs:Class`, or `rdf:Class`, plus eligible URI objects of `rdf:type` after the filters in `identify_classes`. Merely occurring in `rdfs:subClassOf`, `rdfs:domain`, or `rdfs:range` does not add a class.
 - $\mathcal O$, $\mathcal D$, and $\mathcal A$ are URI properties explicitly declared as object, datatype, and annotation properties. $\mathcal F$ and $\mathcal F^{-1}$ are URI subjects explicitly typed as functional and inverse-functional properties.
 - $E=\{(c,p):(c,\texttt{rdfs:subClassOf},p)\in G,\ c\in\mathcal C,\ p\text{ is a URI}\}$, with $H=|E|$. The internal taxonomy uses $E_C=\{(c,p)\in E:p\in\mathcal C\}$.
-- Within $E_C$, $\operatorname{par}(c)$, $\operatorname{child}(c)$, and $\operatorname{sib}(c)$ are direct parents, children, and distinct siblings. Siblings share at least one parent; a class is not its own sibling. Roots $\mathcal R$ have no internal parents; leaves $\mathcal L$ have no internal children. An isolated class is both.
+- Within $E_C$, $\mathrm{par}(c)$, $\mathrm{child}(c)$, and $\mathrm{sib}(c)$ are direct parents, children, and distinct siblings. Siblings share at least one parent; a class is not its own sibling. Roots $\mathcal R$ have no internal parents; leaves $\mathcal L$ have no internal children. An isolated class is both.
 - Counts use explicit triples. No OWL reasoner is run, imports are not resolved, and property associations are not inherited.
 - Unless specified otherwise, a ratio with a zero denominator returns `0.0`.
 
@@ -53,7 +53,7 @@ With the default configuration, `owl:Thing` and `owl:Nothing` are excluded, anon
 
 **Internal:** `size_mb`, supplied to `build_row`.
 
-$$S=\operatorname{round}\left(\frac{\text{file bytes}}{1024^2},2\right).$$
+$$S=\mathrm{round}\left(\frac{\text{file bytes}}{1024^2},2\right).$$
 
 Physical file size rounded to two decimal places. Despite the column name, the unit is **MiB**, not decimal MB.
 
@@ -69,7 +69,7 @@ Length of the UTF-8-decoded file, including spaces, line breaks, comments, and d
 
 **Internal:** `num_tokens_llama` in `build_row`; populated by `count_llama_tokens` in `main`.
 
-$$N_{\mathrm{Llama}}=|\operatorname{encode}_{\mathrm{Llama}}(T)|.$$
+$$N_{\mathrm{Llama}}=|\mathrm{encode}_{\mathrm{Llama}}(T)|.$$
 
 Count identifiers produced by the fast tokenizer for `meta-llama/Llama-3.2-3B` over the complete file, with `add_special_tokens=False` and `truncation=False`. Here decoding uses `errors='replace'`. This is separate from both the embedding tokenizer and the regex tokenization used for Brunet's index.
 
@@ -139,7 +139,7 @@ This group distinguishes the broader edge set $E$ from the internal taxonomy $E_
 
 **Internal:** `ttl_info['SC']`.
 
-$$SC=\frac{\sum_{c\in\mathcal C}|\operatorname{child}(c)|}{C}=\frac{|E_C|}{C}.$$
+$$SC=\frac{\sum_{c\in\mathcal C}|\mathrm{child}(c)|}{C}=\frac{|E_C|}{C}.$$
 
 Average direct child count. Both ends of each counted edge must belong to $\mathcal C$.
 
@@ -163,7 +163,7 @@ Count explicit `rdfs:subClassOf` triples with an identified child and a URI pare
 
 **Internal:** `ttl_info['abs_root_cardinality']`.
 
-$$N_{\mathrm{root}}=|\mathcal R|=|\{c\in\mathcal C:|\operatorname{par}(c)|=0\}|.$$
+$$N_{\mathrm{root}}=|\mathcal R|=|\{c\in\mathcal C:|\mathrm{par}(c)|=0\}|.$$
 
 Classes without an internal direct parent. A class with only an external URI parent is therefore an internal root.
 
@@ -171,7 +171,7 @@ Classes without an internal direct parent. A class with only an external URI par
 
 **Internal:** `ttl_info['abs_leaf_cardinality']`.
 
-$$N_{\mathrm{leaf}}=|\mathcal L|=|\{c\in\mathcal C:|\operatorname{child}(c)|=0\}|.$$
+$$N_{\mathrm{leaf}}=|\mathcal L|=|\{c\in\mathcal C:|\mathrm{child}(c)|=0\}|.$$
 
 Classes without an internal direct child. Isolated classes contribute to both the root and leaf counts.
 
@@ -179,7 +179,7 @@ Classes without an internal direct child. Isolated classes contribute to both th
 
 **Internal:** `ttl_info['abs_sibling_cardinality']`.
 
-$$S_{\mathrm{sib}}=\sum_{c\in\mathcal C}|\operatorname{sib}(c)|.$$
+$$S_{\mathrm{sib}}=\sum_{c\in\mathcal C}|\mathrm{sib}(c)|.$$
 
 Sum of distinct sibling counts per class. A sibling pair contributes twice, once from each endpoint. Sharing several parents does not multiply that pair's contribution.
 
@@ -263,7 +263,7 @@ Average distinct sibling count per class. Despite “Ratio” in its name, it ca
 
 **Internal:** `ttl_info['tangledness']`.
 
-$$T_{\mathrm{multi}}=\frac{|\{c\in\mathcal C:|\operatorname{par}(c)|>1\}|}{C}.$$
+$$T_{\mathrm{multi}}=\frac{|\{c\in\mathcal C:|\mathrm{par}(c)|>1\}|}{C}.$$
 
 Fraction of classes with more than one internal direct parent.
 
@@ -271,7 +271,7 @@ Fraction of classes with more than one internal direct parent.
 
 **Internal:** `ttl_info['num_multi_parent_classes']`.
 
-$$N_{\mathrm{multi}}=|\{c\in\mathcal C:|\operatorname{par}(c)|>1\}|.$$
+$$N_{\mathrm{multi}}=|\{c\in\mathcal C:|\mathrm{par}(c)|>1\}|.$$
 
 Count corresponding to the numerator of `Tangledness`.
 
@@ -301,13 +301,13 @@ The recursive path traversal cuts cyclic branches. With cycles present, path cou
 
 ## 4. Non-taxonomic connectivity
 
-For an object property $p$, let $\operatorname{dom}_C(p)$ and $\operatorname{ran}_C(p)$ contain its explicitly stated domain and range classes in $\mathcal C$.
+For an object property $p$, let $\mathrm{dom}_C(p)$ and $\mathrm{ran}_C(p)$ contain its explicitly stated domain and range classes in $\mathcal C$.
 
 ### Non-taxonomic relations — `PNonTaxonomic`
 
 **Internal:** `ttl_info['P_nontaxonomic']`.
 
-$$P=\sum_{p\in\mathcal O}|\operatorname{dom}_C(p)|\,|\operatorname{ran}_C(p)|.$$
+$$P=\sum_{p\in\mathcal O}|\mathrm{dom}_C(p)|\,|\mathrm{ran}_C(p)|.$$
 
 Count each property–domain–range combination once. A property lacking a valid domain or range contributes zero. Different properties connecting the same classes count separately. Assertions between individuals are not counted.
 
@@ -471,7 +471,7 @@ These metrics combine raw-text processing and graph counts. Regexes approximate 
 
 Let $\mathcal L_T$ be the list of non-empty, edge-trimmed file lines:
 
-$$VD=\frac{\sum_{l\in\mathcal L_T}\operatorname{occurrences}_{\mathcal V}(l)}{|\mathcal L_T|}.$$
+$$VD=\frac{\sum_{l\in\mathcal L_T}\mathrm{occurrences}_{\mathcal V}(l)}{|\mathcal L_T|}.$$
 
 Occurrences of fixed vocabulary terms per non-empty line. Double-quoted literals are masked with line-by-line regexes before counting. Comments and prefix declarations are retained. The result can exceed one and depends on serialization layout; multiline or escaped literals are not handled as a complete Turtle grammar would handle them.
 
@@ -489,7 +489,7 @@ Fraction of fixed vocabulary terms appearing as prefixed-name matches anywhere i
 
 Discard empty lines and lines starting with `#` or `@`, join the rest, mask literals, and split at periods followed by whitespace. For the resulting block list $\mathcal B$:
 
-$$U_{\mathrm{block}}=\frac{|\operatorname{set}(\mathcal B)|}{|\mathcal B|}.$$
+$$U_{\mathrm{block}}=\frac{|\mathrm{set}(\mathcal B)|}{|\mathcal B|}.$$
 
 This is a textual heuristic, not a logical-equivalence check. Each literal occurrence receives a different placeholder, so otherwise identical blocks containing literals can be treated as distinct. Not all comment or prefix syntaxes are removed.
 
@@ -497,7 +497,7 @@ This is a textual heuristic, not a logical-equivalence check. Each literal occur
 
 **Internal:** `ttl_info['line_uniqueness_ratio']`.
 
-$$U_{\mathrm{line}}=\frac{|\operatorname{set}(\mathcal L_T)|}{|\mathcal L_T|}.$$
+$$U_{\mathrm{line}}=\frac{|\mathrm{set}(\mathcal L_T)|}{|\mathcal L_T|}.$$
 
 Distinct lines divided by non-empty lines after trimming their edges. Comments and prefix declarations remain. A value of one indicates no repeated line under this normalization.
 
@@ -515,7 +515,7 @@ $$W=N^{V^{-0.165}}.$$
 
 **Internal:** `ttl_info['annotation_to_structure_ratio']`.
 
-$$ASR=\frac{\sum_{(s,p,o)\in G,\ o\text{ literal}}|\operatorname{str}(o)|}{|T|}.$$
+$$ASR=\frac{\sum_{(s,p,o)\in G,\ o\text{ literal}}|\mathrm{str}(o)|}{|T|}.$$
 
 Count string characters in every literal object, irrespective of predicate, then divide by the complete serialized text length. The denominator is not structure-only text. A value is counted per triple and may recur across triples; this is not guaranteed to be a bounded annotation proportion.
 
@@ -523,7 +523,7 @@ Count string characters in every literal object, irrespective of predicate, then
 
 **Internal:** `ttl_info['literal_coverage_ratio']`.
 
-$$LCR=\frac{|\{c\in\mathcal C:\exists p,o,\ (c,p,o)\in G,\ o\text{ literal},\ |\operatorname{strip}(\operatorname{str}(o))|>0\}|}{C}.$$
+$$LCR=\frac{|\{c\in\mathcal C:\exists p,o,\ (c,p,o)\in G,\ o\text{ literal},\ |\mathrm{strip}(\mathrm{str}(o))|>0\}|}{C}.$$
 
 Fraction of identified classes with at least one directly associated non-empty literal. Predicates need not be known labels, comments, or declared annotation properties.
 
@@ -535,7 +535,7 @@ These components come from `semantic_richness_for_all_classes`. They count neigh
 
 **Internal:** `ttl_info['avg_Ri']`.
 
-$$\overline R=\frac{1}{C}\sum_{c\in\mathcal C}\left(|\operatorname{par}_E(c)|+|\operatorname{child}_E(c)|+|\operatorname{sib}_E(c)|\right).$$
+$$\overline R=\frac{1}{C}\sum_{c\in\mathcal C}\left(|\mathrm{par}_E(c)|+|\mathrm{child}_E(c)|+|\mathrm{sib}_E(c)|\right).$$
 
 Neighbors are built using $E$, so external URI parents may contribute. Parent, child, and sibling sets are added separately; the same neighbor can contribute under several roles. Siblings are deduplicated within their set.
 
@@ -573,9 +573,9 @@ Unweighted sum of the three components without additional normalization. There i
 
 For each metric $x$ across all file rows in the workbook:
 
-$$\operatorname{norm}(x_f)=\begin{cases}\dfrac{x_f-x_{\min}}{x_{\max}-x_{\min}},&x_{\max}>x_{\min},\\0,&x_{\max}=x_{\min}.\end{cases}$$
+$$\mathrm{norm}(x_f)=\begin{cases}\dfrac{x_f-x_{\min}}{x_{\max}-x_{\min}},&x_{\max}>x_{\min},\\0,&x_{\max}=x_{\min}.\end{cases}$$
 
-$$QS_f=\operatorname{norm}(SC_f)+\operatorname{norm}(NTR_f)+\operatorname{norm}(PD_f).$$
+$$QS_f=\mathrm{norm}(SC_f)+\mathrm{norm}(NTR_f)+\mathrm{norm}(PD_f).$$
 
 Each component contributes between zero and one, so $QS\in[0,3]$. The sum is not divided by three. Normalization is global across files, not separate by domain, and is recomputed whenever the workbook is saved. Intermediate values are provisional until all files have been processed.
 
@@ -595,7 +595,7 @@ The literal list written to JSON is sorted, but embedding input is iterated from
 
 **Comparison.** For nonzero task and ontology vectors $e_t$ and $e_f$:
 
-$$\operatorname{Sim}(f)=\frac{e_t\cdot e_f}{\|e_t\|_2\,\|e_f\|_2}.$$
+$$\mathrm{Sim}(f)=\frac{e_t\cdot e_f}{\|e_t\|_2\,\|e_f\|_2}.$$
 
 This is cosine similarity, theoretically in $[-1,1]$ for valid vectors. Null ontology embeddings are assigned `0.0`; this value is a fallback, not an observed cosine similarity. The code does not explicitly guard against zero-norm vectors or empty task text.
 
@@ -603,7 +603,7 @@ This is cosine similarity, theoretically in $[-1,1]$ for valid vectors. Null ont
 
 **Lookup.** The analyzer reads:
 
-$$\operatorname{SemanticSimilarity}(f)=\operatorname{float}\bigl(\mathrm{JSON}[\operatorname{filename}(f)][\texttt{similarity}]\bigr).$$
+$$\mathrm{SemanticSimilarity}(f)=\mathrm{float}\bigl(\mathrm{JSON}[\mathrm{filename}(f)][\texttt{similarity}]\bigr).$$
 
 A missing filename match leaves the Excel cell empty. Files in different directories sharing a filename use the same JSON entry. The score expresses alignment with the supplied task text and representation pipeline, rather than a universal measure of ontology quality.
 
